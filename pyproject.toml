@@ -187,6 +187,26 @@ convention = "google"
     "C901",
 ]
 "tests/pytraverse/**/*.py" = ["ARG001"]
+"tests/probly_benchmark/**/*.py" = [
+    "S101",
+    "INP001",
+    "D101",
+    "D102",
+    "D103",
+    "D404",
+    "ANN001",
+    "ANN201",
+    "ANN202",
+    "FBT001",
+    "D100",
+    "PLR2004",
+    "PD901",
+    "TCH",
+    "N803",
+    "C901",
+    "PLC0415",
+    "PT011",
+]
 "__init__.py" = [
     "I002",    # to not need from __future__ import annotations
     "PLC0414", # to allow import module as module in inits, contradicts F401
@@ -201,6 +221,7 @@ convention = "google"
 ]
 "docs/**/*.py" = ["INP001", "PTH", "I002"]
 "src/probly_benchmark/*.py" = ["T201"]
+"scripts/*.py" = ["T201", "INP001"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 15
@@ -241,7 +262,7 @@ exclude = ["notebooks", "docs", "supporting_files", "examples", "stubs"]
 extra-paths = ["./stubs"]
 
 [[tool.ty.overrides]]
-include = ["tests/probly/**"]
+include = ["tests/probly/**", "tests/probly_benchmark/**"]
 
 [tool.ty.overrides.rules]
 unresolved-import = "ignore"
