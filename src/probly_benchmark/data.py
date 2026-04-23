@@ -483,3 +483,22 @@ def load_mnist(batch_size: int = 128) -> tuple[DataLoader, DataLoader]:
     test_loader = DataLoader(test_data, batch_size=batch_size, shuffle=False)
 
     return train_loader, test_loader
+
+
+def load_fashion_mnist(batch_size: int = 128) -> tuple[DataLoader, DataLoader]:
+    """Load Fashion-MNIST dataset as train/test DataLoaders.
+
+    Args:
+        batch_size: Batch size.
+
+    Returns:
+        Tuple of ``(train_loader, test_loader)`` yielding ``(image, label)``
+        pairs. Images are tensors of shape ``(1, 28, 28)`` scaled to ``[0, 1]``.
+    """
+    ssl._create_default_https_context = ssl._create_unverified_context  # ty:ignore[invalid-assignment]  # noqa: SLF001
+    tf = transforms.ToTensor()
+    train_data = datasets.FashionMNIST("~/.cache/fashion_mnist", train=True, download=True, transform=tf)
+    test_data = datasets.FashionMNIST("~/.cache/fashion_mnist", train=False, download=True, transform=tf)
+    train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
+    test_loader = DataLoader(test_data, batch_size=batch_size, shuffle=False)
+    return train_loader, test_loader
