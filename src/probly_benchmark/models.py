@@ -134,3 +134,82 @@ class MiniResNet(nn.Module):
         x = self.pool(x)
         x = torch.flatten(x, 1)
         return self.fc(x)
+
+
+class TabularMLP(nn.Module):
+    """Two-hidden-layer MLP for tabular classification.
+
+    Architecture: Linear(in, hidden) -> ReLU -> Linear(hidden, hidden) -> ReLU ->
+    Linear(hidden, n_classes). Outputs raw logits (no softmax), compatible with
+    ``torch.nn.CrossEntropyLoss`` and the benchmark's ``train_epoch`` dispatch.
+    """
+
+    def __init__(self, in_features: int, n_classes: int, hidden_dim: int = 1024) -> None:
+        """Initialize the model.
+
+        Args:
+            in_features: Dimensionality of the input feature vector.
+            n_classes: Number of output classes.
+            hidden_dim: Width of each hidden layer.
+        """
+        super().__init__()
+        self.feature_dim = hidden_dim
+        self.features = nn.Sequential(
+            nn.Linear(in_features, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.ReLU(),
+        )
+        self.linear = nn.Linear(hidden_dim, n_classes)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Return raw logits of shape ``(batch, n_classes)``."""
+        return self.linear(self.features(x))
+
+    def embed(self, x: torch.Tensor) -> torch.Tensor:
+        """Return penultimate-layer features of shape ``(batch, hidden_dim)``."""
+        return self.features(x)
+
+
+class LeNetLogits(nn.Module):
+    """LeNet-5 variant for 28x28 grayscale input that outputs raw logits.
+
+    Differs from :class:`LeNet` in dropping the final ``nn.Softmax`` so that the
+    output is compatible with ``torch.nn.CrossEntropyLoss`` and the benchmark's
+    ``train_epoch`` dispatch. Exposes ``embed()`` returning the 84-dim penultimate
+    activations for acquisition functions like BADGE.
+    """
+
+    feature_dim: int = 84
+
+    def __init__(self, n_classes: int = 10) -> None:
+        """Initialize the model.
+
+        Args:
+            n_classes: Number of output classes.
+        """
+        super().__init__()
+        self.features = nn.Sequential(
+            nn.Conv2d(1, 6, kernel_size=5),  # (1,28,28) -> (6,24,24)
+            nn.Tanh(),
+            nn.AvgPool2d(2),  # -> (6,12,12)
+            nn.Conv2d(6, 16, kernel_size=5),  # -> (16,8,8)
+            nn.Tanh(),
+            nn.AvgPool2d(2),  # -> (16,4,4)
+        )
+        self.fc = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(16 * 4 * 4, 120),
+            nn.Tanh(),
+            nn.Linear(120, 84),
+            nn.Tanh(),
+        )
+        self.linear = nn.Linear(84, n_classes)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Return raw logits of shape ``(batch, n_classes)``."""
+        return self.linear(self.fc(self.features(x)))
+
+    def embed(self, x: torch.Tensor) -> torch.Tensor:
+        """Return penultimate-layer features of shape ``(batch, 84)``."""
+        return self.fc(self.features(x))

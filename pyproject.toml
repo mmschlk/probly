@@ -99,6 +99,8 @@ benchmark = [
     "torch<2.11.0",
     "torchvision<0.26.0",
     "pytorch-optimizer>=3.0",
+    "openml>=0.15.0",
+    { include-group = "sklearn" },
 ]
 dev = [
     { include-group = "test" },
