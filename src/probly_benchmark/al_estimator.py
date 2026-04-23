@@ -474,6 +474,26 @@ class BenchmarkEstimator:
                 parts.append(cast("Any", model).embed(chunk).detach().cpu())
         return torch.cat(parts, dim=0).numpy()
 
+    # ---------------------- PostNet alpha (optional) ----------------------
+
+    def postnet_alpha(self, x: np.ndarray) -> np.ndarray:
+        """Return the raw Dirichlet concentration parameters from a PostNet.
+
+        Raises ``TypeError`` if the underlying model is not a PostNet.
+        """
+        model = self._require_model()
+        if not isinstance(model, PosteriorNetworkPredictor):
+            msg = "postnet_alpha requires a PosteriorNetworkPredictor."
+            raise TypeError(msg)
+        model.eval()
+        x_t = torch.as_tensor(np.ascontiguousarray(x), dtype=torch.float32, device=self.device)
+        parts: list[torch.Tensor] = []
+        with torch.no_grad():
+            for start in range(0, x_t.shape[0], self.pred_batch_size):
+                chunk = x_t[start : start + self.pred_batch_size]
+                parts.append(model(chunk).detach().cpu())
+        return torch.cat(parts, dim=0).numpy()
+
     # ---------------------- DDU density (optional) ----------------------
 
     def ddu_log_density(self, x: np.ndarray) -> np.ndarray:

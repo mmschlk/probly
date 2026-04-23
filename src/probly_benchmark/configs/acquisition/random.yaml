@@ -1,0 +1,3 @@
+# @package acquisition
+name: "random"
+num_samples: 1
