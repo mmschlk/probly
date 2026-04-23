@@ -1,0 +1,10 @@
+# @package _global_
+dataset: "fashion_mnist"
+base_model:
+  kind: "lenet_logits"
+per_iter_epochs: 20
+batch_size: 128
+optimizer:
+  name: "adam"
+  params:
+    lr: 1.0e-3

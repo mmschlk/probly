@@ -1,0 +1,20 @@
+defaults:
+  - _self_
+  - method: ??? # user must specify (deterministic, dropout, ensemble, credal_ensembling, posterior_network, ddu).
+  - recipe: ??? # user must specify a recipe (e.g. mlp_openml_6, lenet_fmnist).
+  - acquisition: ??? # user must specify an acquisition (e.g. margin, mutual_info, badge).
+
+seed: 0
+device: null
+
+al:
+  init_pool: 1000
+  n_iterations: 10
+  per_iter: 1000
+  pred_batch_size: 512
+  metric: "accuracy"
+
+wandb:
+  enabled: true
+  entity: "probly"
+  project: "test"

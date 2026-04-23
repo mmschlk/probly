@@ -1,0 +1,12 @@
+# @package _global_
+dataset: "cifar10"
+base_model:
+  kind: "resnet18"
+per_iter_epochs: 20
+batch_size: 128
+optimizer:
+  name: "sgd"
+  params:
+    lr: 0.01
+    momentum: 0.9
+    weight_decay: 5.0e-4

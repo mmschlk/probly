@@ -1,0 +1,12 @@
+# @package _global_
+# Base tabular-MLP recipe for the AL benchmark. Dataset-specific recipes
+# (mlp_openml_6, _155, _156) chain this and override `dataset`.
+base_model:
+  kind: "tabular_mlp"
+  hidden_dim: 1024
+per_iter_epochs: 20
+batch_size: 64
+optimizer:
+  name: "adam"
+  params:
+    lr: 1.0e-3

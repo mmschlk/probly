@@ -1,0 +1,5 @@
+# @package _global_
+defaults:
+  - mlp_openml
+
+dataset: "openml:156"
